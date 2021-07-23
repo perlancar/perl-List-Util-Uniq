@@ -115,7 +115,7 @@ sub is_monovalued_ci {
 
 =head1 FUNCTIONS
 
-Not exported by default but exportable.
+None exported by default but exportable.
 
 =head2 uniq_adj
 
