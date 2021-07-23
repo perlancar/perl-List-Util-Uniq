@@ -1,16 +1,23 @@
 package List::Util::Uniq;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
-use 5.010001;
 use strict;
 use warnings;
 
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(
-                       uniq_adj uniq_adj_ci uniq_ci
+                           uniq_adj
+                           uniq_adj_ci
+                           uniq_ci
+                           is_uniq
+                           is_uniq_ci
+                           is_monovalued
+                           is_monovalued_ci
                );
 
 sub uniq_adj {
@@ -60,6 +67,40 @@ sub uniq_ci {
     @res;
 }
 
+sub is_uniq {
+    my %vals;
+    for (@_) {
+        return 0 if $vals{$_}++;
+    }
+    1;
+}
+
+sub is_uniq_ci {
+    my %vals;
+    for (@_) {
+        return 0 if $vals{lc $_}++;
+    }
+    1;
+}
+
+sub is_monovalued {
+    my %vals;
+    for (@_) {
+        $vals{$_} = 1;
+        return 0 if keys(%vals) > 1;
+    }
+    1;
+}
+
+sub is_monovalued_ci {
+    my %vals;
+    for (@_) {
+        $vals{lc $_} = 1;
+        return 0 if keys(%vals) > 1;
+    }
+    1;
+}
+
 1;
 # ABSTRACT: List utilities related to finding unique items
 
@@ -76,19 +117,61 @@ sub uniq_ci {
 
 Not exported by default but exportable.
 
-=head2 uniq_adj(@list) => LIST
+=head2 uniq_adj
+
+Usage:
+
+ my @uniq = uniq_adj(@list);
 
 Remove I<adjacent> duplicates from list, i.e. behave more like Unix utility's
 B<uniq> instead of L<List::MoreUtils>'s C<uniq> function. Uses string equality
 test.
 
-=head2 uniq_adj_ci(@list) => LIST
+=head2 uniq_adj_ci
 
-Like C<uniq_adj> except case-insensitive.
+Usage:
 
-=head2 uniq_ci(@list) => LIST
+ my @uniq = uniq_adj_ci(@list);
 
-Like C<List::MoreUtils>' C<uniq> except case-insensitive.
+Like L</uniq_adj> except case-insensitive.
+
+=head2 uniq_ci
+
+Usage:
+
+ my @uniq = uniq_ci(@list);
+
+Like C<List::MoreUtils>' C<uniq> (C<uniqstr>) except case-insensitive.
+
+=head2 is_uniq
+
+Usage:
+
+ my $is_uniq = is_uniq(@list);
+
+Return true when the values in C<@list> is unique (compared string-wise).
+Knowing whether a list has unique values is faster using this function compared
+to doing:
+
+ my @uniq = uniq(@list);
+ @uniq == @list;
+
+because of short-circuiting.
+
+=head2 is_monovalued
+
+Usage:
+
+ my $is_monovalued = is_monovalued(@list);
+
+Examples:
+
+ is_monovalued(qw/a b c/); # => 0
+ is_monovalued(qw/a a a/); # => 1
+
+Return true if C<@list> contains only a single value. Returns true for empty
+list. Undef is coerced to empty string, so C<< is_monovalued(undef) >> and C<<
+is_monovalued(undef, undef) >> return true.
 
 
 =head1 SEE ALSO
