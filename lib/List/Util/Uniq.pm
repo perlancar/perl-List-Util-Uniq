@@ -129,17 +129,9 @@ test.
 
 =head2 uniq_adj_ci
 
-Usage:
-
- my @uniq = uniq_adj_ci(@list);
-
 Like L</uniq_adj> except case-insensitive.
 
 =head2 uniq_ci
-
-Usage:
-
- my @uniq = uniq_ci(@list);
 
 Like C<List::MoreUtils>' C<uniq> (C<uniqstr>) except case-insensitive.
 
@@ -158,6 +150,10 @@ to doing:
 
 because of short-circuiting.
 
+=head2 is_uniq_ci
+
+Like L</is_uniq> except case-insensitive.
+
 =head2 is_monovalued
 
 Usage:
@@ -172,6 +168,10 @@ Examples:
 Return true if C<@list> contains only a single value. Returns true for empty
 list. Undef is coerced to empty string, so C<< is_monovalued(undef) >> and C<<
 is_monovalued(undef, undef) >> return true.
+
+=head2 is_monovalued_ci
+
+Like L</is_monovalued> except case-insensitive.
 
 
 =head1 SEE ALSO

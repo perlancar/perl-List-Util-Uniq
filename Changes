@@ -1,3 +1,9 @@
+0.003   2021-07-23  Released-By: PERLANCAR; Urgency: medium
+
+	- Add functions: is_uniq, is_uniq_ci, is_monovalued,
+	  is_monovalued_ci.
+
+
 0.002   2018-03-06  Released-By: PERLANCAR
 
 	- Handle undef in uniq_ci() just like List::Util's uniq().
