@@ -12,6 +12,7 @@ use Exporter qw(import);
 
 our @EXPORT_OK = qw(
                        uniq
+                       uniqint
                        uniqnum
                        uniqstr
 
@@ -23,6 +24,7 @@ our @EXPORT_OK = qw(
                        is_monovalued
                        is_monovalued_ci
                        dupe
+                       dupeint
                        dupenum
                        dupestr
                );
@@ -108,10 +110,11 @@ sub is_monovalued_ci {
     1;
 }
 
-sub uniqstr {
+sub uniqint {
     my (@uniqs, %vals);
     for (@_) {
-        ++$vals{$_} == 1 and push @uniqs, $_;
+        no warnings 'numeric';
+        ++$vals{int $_} == 1 and push @uniqs, $_;
     }
     @uniqs;
 }
@@ -125,12 +128,21 @@ sub uniqnum {
     @uniqs;
 }
 
+sub uniqstr {
+    my (@uniqs, %vals);
+    for (@_) {
+        ++$vals{$_} == 1 and push @uniqs, $_;
+    }
+    @uniqs;
+}
+
 sub uniq { goto \&uniqstr }
 
-sub dupestr {
+sub dupeint {
     my (@dupes, %vals);
     for (@_) {
-        ++$vals{$_} > 1 and push @dupes, $_;
+        no warnings 'numeric';
+        ++$vals{int $_} > 1 and push @dupes, $_;
     }
     @dupes;
 }
@@ -144,12 +156,20 @@ sub dupenum {
     @dupes;
 }
 
+sub dupestr {
+    my (@dupes, %vals);
+    for (@_) {
+        ++$vals{$_} > 1 and push @dupes, $_;
+    }
+    @dupes;
+}
+
 sub dupe { goto \&dupestr }
 
 1;
 # ABSTRACT: List utilities related to finding unique items
 
-=for Pod::Coverage ^(uniq|uniqnum|uniqstr)+
+=for Pod::Coverage ^(uniq|uniqint|uniqnum|uniqstr)+
 
 =head1 SYNOPSIS
 
@@ -254,6 +274,26 @@ Like L</is_monovalued> except case-insensitive.
 
 See L</dupestr>.
 
+=head2 dupeint
+
+Like L</dupestr> but the values are compared as integers. If you only want to
+list each duplicate elements once, you can do:
+
+ @uniq_dupes = uniqint(dupeint(@list));
+
+where C<uniqint> can be found in L<List::Util>, but the pure-perl version is
+also provided by this module, for convenience.
+
+=head2 dupenum
+
+Like L</dupestr> but the values are compared numerically. If you only want to
+list each duplicate elements once, you can do:
+
+ @uniq_dupes = uniqnum(dupenum(@list));
+
+where C<uniqnum> can be found in L<List::Util>, but the pure-perl version is
+also provided by this module, for convenience.
+
 =head2 dupestr
 
 Usage:
@@ -267,16 +307,6 @@ can do:
  @uniq_dupes = uniqstr(dupestr(@list));
 
 where C<uniqstr> can be found in L<List::Util>, but the pure-perl version is
-also provided by this module, for convenience.
-
-=head2 dupenum
-
-Like L</dupestr> but the values are compared numerically. If you only want to
-list each duplicate elements once, you can do:
-
- @uniq_dupes = uniqnum(dupenum(@list));
-
-where C<uniqnum> can be found in L<List::Util>, but the pure-perl version is
 also provided by this module, for convenience.
 
 

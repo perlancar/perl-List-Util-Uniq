@@ -6,6 +6,7 @@ use Test::More 0.98;
 
 use List::Util::Uniq qw(
                            uniq
+                           uniqint
                            uniqnum
                            uniqstr
 
@@ -17,6 +18,7 @@ use List::Util::Uniq qw(
                            is_monovalued
                            is_monovalued_ci
                            dupe
+                           dupeint
                            dupenum
                            dupestr
                         );
@@ -75,6 +77,16 @@ subtest "dupe" => sub {
     is_deeply([dupe(1, 2, 4, 4, 4, 2, 4)], [4,4,2,4]);
 
     is_deeply([uniq(dupe(1, 2, 4, 4, 4, 2, 4))], [4,2]);
+};
+
+subtest "dupeint" => sub {
+    is_deeply([dupeint()], []);
+    is_deeply([dupeint(1,2)], []);
+    is_deeply([dupeint(1, 2, 4, 4, 4, 2, 4)], [4,4,2,4]);
+    is_deeply([dupeint("a","b")], ["b"]);
+    is_deeply([dupeint(1, 1.1)], [1.1]);
+
+    is_deeply([uniqint(dupeint(1, 2, 4, 4, 4, 2, 4))], [4,2]);
 };
 
 subtest "dupenum" => sub {
