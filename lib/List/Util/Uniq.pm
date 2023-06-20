@@ -200,8 +200,10 @@ sub dupe_ci {
      uniq_adj_ci
      uniq_ci
      dupe
+     dupeint
      dupenum
      dupestr
+     dupe_ci
  );
 
  $res = is_monovalued(qw/a a a/); # => 1
@@ -223,9 +225,12 @@ sub dupe_ci {
  @res = uniq_ci("a", "b", "B", "c", "a"); #  => ("a", "b", "c")
 
  @res = dupe("a","b","a","a","b","c"); #  => ("a","a","b")
+ @res = dupeint(1,1.2,1.3,2); #  => (1.2,1.3)
  @res = dupenum(1,2,1,1,2,3); #  => (1,1,2)
  @res = dupenum("a",0,0.0,1); #  => (0,0.0), because "a" becomes 0 numerically
  @res = dupestr("a","b","a","a","b","c"); # => ("a","a","b")
+
+ @res = dupe_ci("a", "b", "B", "c", "a"); #  => ("B", "a")
 
 
 =head1 FUNCTIONS
@@ -239,7 +244,7 @@ Usage:
  my @uniq = uniq_adj(@list);
 
 Remove I<adjacent> duplicates from list, i.e. behave more like Unix utility's
-B<uniq> instead of L<List::MoreUtils>'s C<uniq> function. Uses string equality
+B<uniq> instead of L<List::Util>'s C<uniq> function. Uses string equality
 test.
 
 =head2 uniq_adj_ci
@@ -248,7 +253,7 @@ Like L</uniq_adj> except case-insensitive.
 
 =head2 uniq_ci
 
-Like C<List::MoreUtils>' C<uniq> (C<uniqstr>) except case-insensitive.
+Like C<List::Util>' C<uniq> (C<uniqstr>) except case-insensitive.
 
 =head2 is_uniq
 
@@ -326,6 +331,10 @@ can do:
 
 where C<uniqstr> can be found in L<List::Util>, but the pure-perl version is
 also provided by this module, for convenience.
+
+=head2 dupe_ci
+
+Like L</dupe> except case-insensitive.
 
 
 =head1 SEE ALSO
