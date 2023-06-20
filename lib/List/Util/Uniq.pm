@@ -283,3 +283,5 @@ also provided by this module, for convenience.
 =head1 SEE ALSO
 
 L<List::Util>
+
+Other C<List::Util::*> modules.
