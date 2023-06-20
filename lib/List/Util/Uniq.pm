@@ -23,10 +23,13 @@ our @EXPORT_OK = qw(
                        is_uniq_ci
                        is_monovalued
                        is_monovalued_ci
+
                        dupe
                        dupeint
                        dupenum
                        dupestr
+
+                       dupe_ci
                );
 
 sub uniq_adj {
@@ -165,6 +168,21 @@ sub dupestr {
 }
 
 sub dupe { goto \&dupestr }
+
+sub dupe_ci {
+    my @res;
+
+    my %mem;
+    my $undef_added;
+    for (@_) {
+        if (defined) {
+            push @res, $_ if $mem{lc $_}++;
+        } else {
+            push @res, $_ if $undef_added++;
+        }
+    }
+    @res;
+}
 
 1;
 # ABSTRACT: List utilities related to finding unique items

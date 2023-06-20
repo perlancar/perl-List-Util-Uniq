@@ -17,10 +17,13 @@ use List::Util::Uniq qw(
                            is_uniq_ci
                            is_monovalued
                            is_monovalued_ci
+
                            dupe
                            dupeint
                            dupenum
                            dupestr
+
+                           dupe_ci
                         );
 
 subtest "uniq_adj" => sub {
@@ -105,6 +108,11 @@ subtest "dupestr" => sub {
     is_deeply([dupestr(1, 2, 4, 4, 4, 2, 4)], [4,4,2,4]);
 
     is_deeply([uniqstr(dupestr(qw/a b d d d b c/))], [qw/d b/]);
+};
+
+subtest "dupe_ci" => sub {
+    is_deeply([dupe_ci(qw/a b B a b C c/)], [qw/B a b c/]);
+    is_deeply([dupe_ci("a","b","B",undef,"c",undef)], ["B",undef]);
 };
 
 DONE_TESTING:
