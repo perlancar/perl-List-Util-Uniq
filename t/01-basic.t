@@ -5,6 +5,10 @@ use warnings;
 use Test::More 0.98;
 
 use List::Util::Uniq qw(
+                           uniq
+                           uniqnum
+                           uniqstr
+
                            uniq_adj
                            uniq_adj_ci
                            uniq_ci
@@ -12,6 +16,9 @@ use List::Util::Uniq qw(
                            is_uniq_ci
                            is_monovalued
                            is_monovalued_ci
+                           dupe
+                           dupenum
+                           dupestr
                         );
 
 subtest "uniq_adj" => sub {
@@ -59,6 +66,33 @@ subtest "is_monovalued_ci" => sub {
     ok(!is_monovalued_ci(qw/a b/));
     ok( is_monovalued_ci(qw/a A/));
     ok( is_monovalued_ci(qw/a a/));
+};
+
+subtest "dupe" => sub {
+    is_deeply([dupe()], []);
+    is_deeply([dupe(1,2)], []);
+    is_deeply([dupe(qw/a b d d d b c/)], [qw/d d b/]);
+    is_deeply([dupe(1, 2, 4, 4, 4, 2, 4)], [4,4,2,4]);
+
+    is_deeply([uniq(dupe(1, 2, 4, 4, 4, 2, 4))], [4,2]);
+};
+
+subtest "dupenum" => sub {
+    is_deeply([dupenum()], []);
+    is_deeply([dupenum(1,2)], []);
+    is_deeply([dupenum(1, 2, 4, 4, 4, 2, 4)], [4,4,2,4]);
+    is_deeply([dupenum("a","b")], ["b"]);
+
+    is_deeply([uniqnum(dupenum(1, 2, 4, 4, 4, 2, 4))], [4,2]);
+};
+
+subtest "dupestr" => sub {
+    is_deeply([dupestr()], []);
+    is_deeply([dupestr(1,2)], []);
+    is_deeply([dupestr(qw/a b d d d b c/)], [qw/d d b/]);
+    is_deeply([dupestr(1, 2, 4, 4, 4, 2, 4)], [4,4,2,4]);
+
+    is_deeply([uniqstr(dupestr(qw/a b d d d b c/))], [qw/d b/]);
 };
 
 DONE_TESTING:

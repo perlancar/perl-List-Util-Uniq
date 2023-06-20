@@ -1,23 +1,30 @@
 package List::Util::Uniq;
 
+use strict;
+use warnings;
+
+use Exporter qw(import);
+
 # AUTHORITY
 # DATE
 # DIST
 # VERSION
 
-use strict;
-use warnings;
-
-require Exporter;
-our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(
-                           uniq_adj
-                           uniq_adj_ci
-                           uniq_ci
-                           is_uniq
-                           is_uniq_ci
-                           is_monovalued
-                           is_monovalued_ci
+                       uniq
+                       uniqnum
+                       uniqstr
+
+                       uniq_adj
+                       uniq_adj_ci
+                       uniq_ci
+                       is_uniq
+                       is_uniq_ci
+                       is_monovalued
+                       is_monovalued_ci
+                       dupe
+                       dupenum
+                       dupestr
                );
 
 sub uniq_adj {
@@ -101,8 +108,48 @@ sub is_monovalued_ci {
     1;
 }
 
+sub uniqstr {
+    my (@uniqs, %vals);
+    for (@_) {
+        ++$vals{$_} == 1 and push @uniqs, $_;
+    }
+    @uniqs;
+}
+
+sub uniqnum {
+    my (@uniqs, %vals);
+    for (@_) {
+        no warnings 'numeric';
+        ++$vals{$_+0} == 1 and push @uniqs, $_;
+    }
+    @uniqs;
+}
+
+sub uniq { goto \&uniqstr }
+
+sub dupestr {
+    my (@dupes, %vals);
+    for (@_) {
+        ++$vals{$_} > 1 and push @dupes, $_;
+    }
+    @dupes;
+}
+
+sub dupenum {
+    my (@dupes, %vals);
+    for (@_) {
+        no warnings 'numeric';
+        ++$vals{$_+0} > 1 and push @dupes, $_;
+    }
+    @dupes;
+}
+
+sub dupe { goto \&dupestr }
+
 1;
 # ABSTRACT: List utilities related to finding unique items
+
+=for Pod::Coverage ^(uniq|uniqnum|uniqstr)+
 
 =head1 SYNOPSIS
 
@@ -114,25 +161,33 @@ sub is_monovalued_ci {
      uniq_adj
      uniq_adj_ci
      uniq_ci
+     dupe
+     dupenum
+     dupestr
  );
 
- $res = is_monovalued(qw/a a a/); # 1
- $res = is_monovalued(qw/a b a/); # 0
+ $res = is_monovalued(qw/a a a/); # => 1
+ $res = is_monovalued(qw/a b a/); # => 0
 
- $res = is_monovalued_ci(qw/a a A/); # 1
- $res = is_monovalued_ci(qw/a b A/); # 0
+ $res = is_monovalued_ci(qw/a a A/); # => 1
+ $res = is_monovalued_ci(qw/a b A/); # => 0
 
- $res = is_uniq(qw/a b a/); # 0
- $res = is_uniq(qw/a b c/); # 1
+ $res = is_uniq(qw/a b a/); # => 0
+ $res = is_uniq(qw/a b c/); # => 1
 
- $res = is_uniq_ci(qw/a b A/); # 0
- $res = is_uniq_ci(qw/a b c/); # 1
+ $res = is_uniq_ci(qw/a b A/); # => 0
+ $res = is_uniq_ci(qw/a b c/); # => 1
 
- @res = uniq_adj(1, 4, 4, 3, 1, 1, 2); # 1, 4, 3, 1, 2
+ @res = uniq_adj(1, 4, 4, 3, 1, 1, 2); # => (1, 4, 3, 1, 2)
 
- @res = uniq_adj_ci("a", "b", "B", "c", "a"); # "a", "b", "c", "a"
+ @res = uniq_adj_ci("a", "b", "B", "c", "a"); # => ("a", "b", "c", "a")
 
- @res = uniq_ci("a", "b", "B", "c", "a"); # "a", "b", "c"
+ @res = uniq_ci("a", "b", "B", "c", "a"); #  => ("a", "b", "c")
+
+ @res = dupe("a","b","a","a","b","c"); #  => ("a","a","b")
+ @res = dupenum(1,2,1,1,2,3); #  => (1,1,2)
+ @res = dupenum("a",0,0.0,1); #  => (0,0.0), because "a" becomes 0 numerically
+ @res = dupestr("a","b","a","a","b","c"); # => ("a","a","b")
 
 
 =head1 FUNCTIONS
@@ -194,6 +249,35 @@ is_monovalued(undef, undef) >> return true.
 =head2 is_monovalued_ci
 
 Like L</is_monovalued> except case-insensitive.
+
+=head2 dupe
+
+See L</dupestr>.
+
+=head2 dupestr
+
+Usage:
+
+ @dupes = dupestr(@list);
+
+Return duplicate elements (the second and subsequence occurrences of each
+element) in C<@list>. If you only want to list each duplicate elements once, you
+can do:
+
+ @uniq_dupes = uniqstr(dupestr(@list));
+
+where C<uniqstr> can be found in L<List::Util>, but the pure-perl version is
+also provided by this module, for convenience.
+
+=head2 dupenum
+
+Like L</dupestr> but the values are compared numerically. If you only want to
+list each duplicate elements once, you can do:
+
+ @uniq_dupes = uniqnum(dupenum(@list));
+
+where C<uniqnum> can be found in L<List::Util>, but the pure-perl version is
+also provided by this module, for convenience.
 
 
 =head1 SEE ALSO
