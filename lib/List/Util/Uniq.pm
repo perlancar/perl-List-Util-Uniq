@@ -233,6 +233,12 @@ sub dupe_ci {
  @res = dupe_ci("a", "b", "B", "c", "a"); #  => ("B", "a")
 
 
+=head1 DESCRIPTION
+
+This module supplements L<List::Util> with functions related to list item's
+uniqueness.
+
+
 =head1 FUNCTIONS
 
 None exported by default but exportable.
@@ -245,7 +251,7 @@ Usage:
 
 Remove I<adjacent> duplicates from list, i.e. behave more like Unix utility's
 B<uniq> instead of L<List::Util>'s C<uniq> function. Uses string equality
-test.
+test (the C<eq> operator).
 
 =head2 uniq_adj_ci
 
@@ -261,9 +267,9 @@ Usage:
 
  my $is_uniq = is_uniq(@list);
 
-Return true when the values in C<@list> is unique (compared string-wise).
-Knowing whether a list has unique values is faster using this function compared
-to doing:
+Return true when the values in C<@list> is unique (compared string-wise). In
+theory, knowing whether a list has unique values is faster using this function
+compared to doing:
 
  my @uniq = uniq(@list);
  @uniq == @list;
