@@ -30,6 +30,11 @@ our @EXPORT_OK = qw(
                        dupestr
 
                        dupe_ci
+
+                       pushuniq
+                       pushuniqint
+                       pushuniqnum
+                       pushuniqstr
                );
 
 sub uniq_adj {
@@ -184,6 +189,44 @@ sub dupe_ci {
     @res;
 }
 
+sub pushuniqstr(\@@) {
+    my $ary = shift;
+
+    my %vals;
+    for (@$ary) { $vals{$_}++ }
+
+    for my $item (@_) {
+        next if $vals{$item}++;
+        push @$ary, $item;
+    }
+}
+
+sub pushuniqnum(\@@) {
+    my $ary = shift;
+
+    my %vals;
+    for (@$ary) { $vals{$_+0}++ }
+
+    for my $item (@_) {
+        next if $vals{$item+0}++;
+        push @$ary, $item;
+    }
+}
+
+sub pushuniqint(\@@) {
+    my $ary = shift;
+
+    my %vals;
+    for (@$ary) { $vals{int $_}++ }
+
+    for my $item (@_) {
+        next if $vals{int $item}++;
+        push @$ary, $item;
+    }
+}
+
+sub pushuniq(\@@) { goto \&pushuniqstr }
+
 1;
 # ABSTRACT: List utilities related to finding unique items
 
@@ -192,6 +235,11 @@ sub dupe_ci {
 =head1 SYNOPSIS
 
  use List::Util::Uniq qw(
+     uniq
+     uniqint
+     uniqnum
+     uniqstr
+
      is_monovalued
      is_monovalued_ci
      is_uniq
@@ -199,11 +247,17 @@ sub dupe_ci {
      uniq_adj
      uniq_adj_ci
      uniq_ci
+
      dupe
      dupeint
      dupenum
      dupestr
      dupe_ci
+
+     pushuniq
+     pushuniqint
+     pushuniqnum
+     pushuniqstr
  );
 
  $res = is_monovalued(qw/a a a/); # => 1
@@ -232,6 +286,10 @@ sub dupe_ci {
 
  @res = dupe_ci("a", "b", "B", "c", "a"); #  => ("B", "a")
 
+ my @ary = (1,"a",2,1,"a","b"); pushuniqstr @ary, 1,"a","c","c";   # @ary is now (1,"a",2,1,"a","b","c")
+ my @ary = (1,"1.0",1.1,2); pushuniqnum @ary, 2,"1.00",1.2,"1.000",3,3;   # @ary is now (1,"1.0",1.1,2,1.2,3)
+ my @ary = (1,"1.0",1.1,2); pushuniqint @ary, 2,"1.00",1.2,"1.000",3,3;   # @ary is now (1,"1.0",1.1,2,3)
+
 
 =head1 DESCRIPTION
 
@@ -242,6 +300,37 @@ uniqueness.
 =head1 FUNCTIONS
 
 None exported by default but exportable.
+
+=head2 uniq
+
+See L</uniqstr>.
+
+=head2 uniqnum
+
+Usage:
+
+ my @uniq = uniqnum(@list);
+
+Like L<List::Util>'s C<uniqnum>. This module provides a pure-Perl implementation
+for convenience and so we do not need to depend on List::Util.
+
+=head2 uniqint
+
+Usage:
+
+ my @uniq = uniqint(@list);
+
+Like L<List::Util>'s C<uniqint>. This module provides a pure-Perl implementation
+for convenience and so we do not need to depend on List::Util.
+
+=head2 uniqstr
+
+Usage:
+
+ my @uniq = uniqstr(@list);
+
+Like L<List::Util>'s C<uniqstr>. This module provides a pure-Perl implementation
+for convenience and so we do not need to depend on List::Util.
 
 =head2 uniq_adj
 
@@ -341,6 +430,43 @@ also provided by this module, for convenience.
 =head2 dupe_ci
 
 Like L</dupe> except case-insensitive.
+
+=head2 pushuniq
+
+See L</pushuniqstr>.
+
+=head2 pushuniqstr
+
+Usage:
+
+ pushuniqstr @ary, LIST;
+
+Push items of I<LIST> to I<@ary> only if items are not already in C<@ary> (using
+string-wise equal comparison operator, C<eq>). Shortcut for something like:
+
+ for my $item (LIST) { push @ary, $_ unless grep { $item eq $_ } @ary }
+
+=head2 pushuniqnum
+
+Usage:
+
+ pushuniqnum @ary, LIST;
+
+Push items of I<LIST> to I<@ary> only if items are not already in C<@ary> (using
+numeric equal comparison operator, C<==>). Shortcut for something like:
+
+ for my $item (LIST) { push @ary, $_ unless grep { $item == $_ } @ary }
+
+=head2 pushuniqint
+
+Usage:
+
+ pushuniqnum @ary, LIST;
+
+Push items of I<LIST> to I<@ary> only if items are not already in C<@ary> (using
+integer equal comparison). Shortcut for something like:
+
+ for my $item (LIST) { push @ary, $_ unless grep { int($item) == int($_) } @ary }
 
 
 =head1 SEE ALSO
